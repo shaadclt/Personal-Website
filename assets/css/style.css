@@ -492,7 +492,6 @@ section .container {
   margin: 0;
   /* text-transform: uppercase; */
   display: block;
-  font-size: 20px;
   font-weight: 500;
   font-family: "Poppins", sans-serif;
   color: #fff;
