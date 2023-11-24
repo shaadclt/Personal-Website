@@ -64,6 +64,45 @@
       },
       "description": "Self-taught Data Scientist fusing engineering skills with a data passion"
   }
+</script>
+<script>
+  let currentPost = 1; // Initialize with the first blog post
+
+  function changeBlogPost(direction) {
+    const totalPosts = document.querySelectorAll('.blog-post').length;
+
+    // Calculate the next post index
+    let nextPost = currentPost + direction;
+
+    // Ensure the next post is within bounds
+    if (nextPost < 1) {
+      nextPost = totalPosts;
+    } else if (nextPost > totalPosts) {
+      nextPost = 1;
+    }
+
+    // Hide the current post and show the next one
+    document.getElementById(`blog-post-${currentPost}`).style.display = 'none';
+    document.getElementById(`blog-post-${nextPost}`).style.display = 'block';
+
+    // Update the current post index
+    currentPost = nextPost;
+  }
+</script>
+<script>
+  function changeBlogPost(offset) {
+    // Logic to change blog post based on the offset
+    // For simplicity, let's toggle the display property
+    document.getElementById('blog-post-1').style.display = 'none';
+    document.getElementById('blog-post-2').style.display = 'none';
+
+    // Show the blog post based on the offset
+    if (offset === -1) {
+      document.getElementById('blog-post-1').style.display = 'block';
+    } else {
+      document.getElementById('blog-post-2').style.display = 'block';
+    }
+  }
 </script>  
 </head>
 
@@ -83,6 +122,7 @@
           <li><a class="nav-link active" href="#header">Home</a></li>
           <li><a class="nav-link" href="#about">About</a></li>
           <li><a class="nav-link" href="#resume">Resume</a></li>
+          <li><a class="nav-link" href="#blog">Blog</a></li>
           <li><a class="nav-link" href="#portfolio">Portfolio</a></li>
           <li><a class="nav-link" href="#contact">Contact</a></li>
         </ul>
@@ -351,6 +391,7 @@ If you are looking for a dedicated and self-driven data scientist with expertise
   </section>
   <!-- End About Section -->
 
+
   <!-- ======= Resume Section ======= -->
   <section id="resume" class="resume">
     <div class="container">
@@ -480,6 +521,55 @@ If you are looking for a dedicated and self-driven data scientist with expertise
     </div>
   </section>
   <!-- End Resume Section -->
+
+  <!-- ======= Blog Section ======= -->
+  <section id="blog" class="blog">
+    <div class="blog-navigation text-center">
+      <a href="javascript:void(0);" onclick="changeBlogPost(-1)">← Previous</a>
+      <a href="javascript:void(0);" onclick="changeBlogPost(1)">&nbsp;Next →</a>
+    </div>
+    <br>
+    <div class="blog-posts text-center">
+      <!-- Blog Post Content Goes Here -->
+      <div class="blog-post" id="blog-post-1">
+        <article class="entry">
+          <header class="entry-header">
+            <h2 class="entry-title">
+              <a href="#">Introduction to Data Science</a>
+            </h2>
+            <div class="entry-meta">
+              <!-- <ul>
+                <li class="d-flex align-items-center"><i class="bi bi-clock"></i> &nbsp;<time datetime="2023-11-24">November 24, 2023</time></li>
+              </ul> -->
+            </div>
+          </header>
+          <div class="entry-content">
+            <p>Data science is an exciting field that...</p>
+          </div>
+        </article>
+      </div>
+  
+      <div class="blog-post" id="blog-post-2" style="display: none;">
+        <article class="entry">
+          <header class="entry-header">
+            <h2 class="entry-title">
+              <a href="#">Machine Learning in Practice</a>
+            </h2>
+            <div class="entry-meta">
+              <!-- <ul>
+                <li class="d-flex align-items-center"><i class="bi bi-clock"></i> &nbsp;<time datetime="2023-11-25">November 25, 2023</time></li>
+              </ul>
+            </div> -->
+          </header>
+          <div class="entry-content">
+            <p>Implementing machine learning models can be challenging...</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+  
+<!-- End Blog Section -->
 
 <!-- ======= Portfolio Section ======= -->
   <section id="portfolio" class="portfolio">
