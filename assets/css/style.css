@@ -1191,7 +1191,7 @@ section .container {
 .blog-post {
   padding: 40px; 
   background-color: rgba(49, 45, 45, 0.8);
-  margin: 40px; 
+  margin: 30px; 
   border: 1px solid #35e888;
 }
 
