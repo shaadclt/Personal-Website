@@ -534,7 +534,7 @@ If you are looking for a dedicated and self-driven data scientist with expertise
       <div class="blog-post" id="blog-post-1">
         <article class="entry">
           <header class="entry-header">
-            <h2 class="entry-title">
+            <h2 class="entry-title text-center">
               <a href="#">Exploring Natural Language Processing in Python: A Comprehensive Guide</a>
             </h2>
             <div class="entry-meta">
@@ -542,9 +542,9 @@ If you are looking for a dedicated and self-driven data scientist with expertise
                 <li class="d-flex align-items-center"><i class="bi bi-clock"></i> &nbsp;<time datetime="2023-11-24">November 24, 2023</time></li>
               </ul> -->
             </div>
-          </header>
+          </header><br><br>
           <div class="entry-content">
-            <h2>Introduction</h2>
+            <h3>Introduction</h3>
     <p>
         In the realm of data science and machine learning, Natural Language Processing (NLP) plays a pivotal role in
         extracting valuable insights from textual data. In this blog post, we will embark on a journey through various
@@ -553,8 +553,9 @@ If you are looking for a dedicated and self-driven data scientist with expertise
         world of Topic Modeling.
     </p>
 
-    <h3>1. Importing Libraries</h3>
+    <h4>1. Importing Libraries</h4>
     <pre>
+
 # Code snippet 1
 import pandas as pd
 import plotly.express as px
@@ -568,16 +569,18 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import LatentDirichletAllocation
     </pre>
 
-    <h3>2. Loading Data</h3>
+    <h4>2. Loading Data</h4>
     <pre>
+
 # Code snippet 2
 nlp = spacy.load('en_core_web_sm')
 data = pd.read_csv("articles.csv", encoding='latin-1')
 data.head()
     </pre>
 
-    <h3>3. Visualizing the Word Cloud</h3>
+    <h4>3. Visualizing the Word Cloud</h4>
     <pre>
+      
 # Code snippet 3
 titles_text = ' '.join(data['Title'])
 wordcloud = WordCloud(width=800, height=400, background_color='white').generate(titles_text)
@@ -586,16 +589,18 @@ fig.update_layout(showlegend=False)
 fig.show()
     </pre>
 
-    <h3>4. Analyzing the Distribution of Sentiments</h3>
+    <h4>4. Analyzing the Distribution of Sentiments</h4>
     <pre>
+
 # Code snippet 4
 data['Sentiment'] = data['Article'].apply(lambda x: TextBlob(x).sentiment.polarity)
 fig = px.histogram(data, x='Sentiment', title='Sentiment Distribution')
 fig.show()
     </pre>
 
-    <h3>5. Performing Named Entity Recognition</h3>
+    <h4>5. Performing Named Entity Recognition</h4>
     <pre>
+
 # Code snippet 5
 def extract_named_entities(text):
     doc = nlp(text)
@@ -614,8 +619,9 @@ fig = px.bar(entity_df.head(10), x='Entity', y='Count', title='Top 10 Named Enti
 fig.show()
     </pre>
 
-    <h3>6. Topic Modeling</h3>
+    <h4>6. Topic Modeling</h4>
     <pre>
+
 # Code snippet 6
 vectorizer = CountVectorizer(max_df=0.95, min_df=2, max_features=1000, stop_words='english')
 tf = vectorizer.fit_transform(data['Article'])
