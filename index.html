@@ -545,99 +545,122 @@ If you are looking for a dedicated and self-driven data scientist with expertise
           </header><br><br>
           <div class="entry-content">
             <h3>Introduction</h3>
-    <p>
-        In the realm of data science and machine learning, Natural Language Processing (NLP) plays a pivotal role in
-        extracting valuable insights from textual data. In this blog post, we will embark on a journey through various
-        NLP techniques using Python, leveraging popular libraries such as spaCy, TextBlob, and scikit-learn. Our focus
-        will be on visualizing, analyzing sentiment, performing Named Entity Recognition (NER), and diving into the
-        world of Topic Modeling.
-    </p>
-
-    <h4>1. Importing Libraries</h4>
-    <pre>
-
-import pandas as pd
-import plotly.express as px
-from wordcloud import WordCloud
-import matplotlib.pyplot as plt
-from textblob import TextBlob
-import spacy
-from collections import defaultdict
-from collections import Counter
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.decomposition import LatentDirichletAllocation
-    </pre>
-
-    <h4>2. Loading Data</h4>
-    <pre>
-
-nlp = spacy.load('en_core_web_sm')
-data = pd.read_csv("articles.csv", encoding='latin-1')
-data.head()
-    </pre>
-
-    <h4>3. Visualizing the Word Cloud</h4>
-    <pre>
-
-titles_text = ' '.join(data['Title'])
-wordcloud = WordCloud(width=800, height=400, background_color='white').generate(titles_text)
-fig = px.imshow(wordcloud, title='Word Cloud of Titles')
-fig.update_layout(showlegend=False)
-fig.show()
-    </pre>
-
-    <h4>4. Analyzing the Distribution of Sentiments</h4>
-    <pre>
-
-data['Sentiment'] = data['Article'].apply(lambda x: TextBlob(x).sentiment.polarity)
-fig = px.histogram(data, x='Sentiment', title='Sentiment Distribution')
-fig.show()
-    </pre>
-
-    <h4>5. Performing Named Entity Recognition</h4>
-    <pre>
-
-def extract_named_entities(text):
-    doc = nlp(text)
-    entities = defaultdict(list)
-    for ent in doc.ents:
-        entities[ent.label_].append(ent.text)
-    return dict(entities)
-
-data['Named_Entities'] = data['Article'].apply(extract_named_entities)
-
-entity_counts = Counter(entity for entities in data['Named_Entities'] for entity in entities)
-entity_df = pd.DataFrame.from_dict(entity_counts, orient='index').reset_index()
-entity_df.columns = ['Entity', 'Count']
-
-fig = px.bar(entity_df.head(10), x='Entity', y='Count', title='Top 10 Named Entities')
-fig.show()
-    </pre>
-
-    <h4>6. Topic Modeling</h4>
-    <pre>
-
-vectorizer = CountVectorizer(max_df=0.95, min_df=2, max_features=1000, stop_words='english')
-tf = vectorizer.fit_transform(data['Article'])
-lda_model = LatentDirichletAllocation(n_components=5, random_state=42)
-lda_topic_matrix = lda_model.fit_transform(tf)
-
-topic_names = ["Topic " + str(i) for i in range(lda_model.n_components)]
-data['Dominant_Topic'] = [topic_names[i] for i in lda_topic_matrix.argmax(axis=1)]
-topic_counts = data['Dominant_Topic'].value_counts().reset_index()
-topic_counts.columns = ['index', 'count']
-
-fig = px.bar(topic_counts, x='index', y='count', title='Topic Distribution')
-fig.show()
-    </pre>
-
-    <h2>Conclusion</h2>
-    <p>
-        This comprehensive guide has walked you through the essential steps of natural language processing using Python.
-        From creating captivating word clouds and analyzing sentiment distributions to extracting named entities and
-        uncovering hidden topics, you now possess the tools to extract valuable insights from textual data. Experiment,
-        explore, and unlock the full potential of NLP in your data science projects. Happy coding!
-    </p>
+            <p>
+                In the realm of data science and machine learning, Natural Language Processing (NLP) plays a pivotal role in
+                extracting valuable insights from textual data. In this blog post, we will embark on a journey through various
+                NLP techniques using Python, leveraging popular libraries such as spaCy, TextBlob, and scikit-learn. Our focus
+                will be on visualizing, analyzing sentiment, performing Named Entity Recognition (NER), and diving into the
+                world of Topic Modeling.
+            </p>
+        
+            <h4>1. Importing Libraries</h4>
+            <p>
+                To begin our NLP journey, we import essential libraries for data manipulation, visualization, and natural
+                language processing. These libraries include Pandas for data handling, Plotly Express for interactive
+                visualizations, WordCloud for creating word clouds, Matplotlib for additional plotting capabilities, TextBlob
+                for sentiment analysis, spaCy for Named Entity Recognition (NER), and scikit-learn for Topic Modeling.
+            </p>
+            <pre>
+        import pandas as pd
+        import plotly.express as px
+        from wordcloud import WordCloud
+        import matplotlib.pyplot as plt
+        from textblob import TextBlob
+        import spacy
+        from collections import defaultdict
+        from collections import Counter
+        from sklearn.feature_extraction.text import CountVectorizer
+        from sklearn.decomposition import LatentDirichletAllocation
+            </pre>
+        
+            <h4>2. Loading Data</h4>
+            <p>
+                In this step, we load our dataset using Pandas. The dataset, stored in a CSV file named "articles.csv," contains
+                information that we will analyze using various NLP techniques.
+            </p>
+            <pre>
+        nlp = spacy.load('en_core_web_sm')
+        data = pd.read_csv("articles.csv", encoding='latin-1')
+        data.head()
+            </pre>
+        
+            <h4>3. Visualizing the Word Cloud</h4>
+            <p>
+                Word clouds offer a visually appealing representation of the most frequent words in a collection of text. Here,
+                we generate a word cloud based on the titles of the articles using the WordCloud library and visualize it with
+                Plotly Express.
+            </p>
+            <pre>
+        titles_text = ' '.join(data['Title'])
+        wordcloud = WordCloud(width=800, height=400, background_color='white').generate(titles_text)
+        fig = px.imshow(wordcloud, title='Word Cloud of Titles')
+        fig.update_layout(showlegend=False)
+        fig.show()
+            </pre>
+        
+            <h4>4. Analyzing the Distribution of Sentiments</h4>
+            <p>
+                Sentiment analysis helps us understand the emotional tone of the articles. Using TextBlob, we calculate the
+                sentiment polarity for each article and visualize the distribution using a histogram with Plotly Express.
+            </p>
+            <pre>
+        data['Sentiment'] = data['Article'].apply(lambda x: TextBlob(x).sentiment.polarity)
+        fig = px.histogram(data, x='Sentiment', title='Sentiment Distribution')
+        fig.show()
+            </pre>
+        
+            <h4>5. Performing Named Entity Recognition</h4>
+            <p>
+                Named Entity Recognition (NER) involves identifying entities such as people, organizations, and locations within
+                the text. Using spaCy, we extract named entities from the articles and visualize the top entities with a bar
+                chart.
+            </p>
+            <pre>
+        def extract_named_entities(text):
+            doc = nlp(text)
+            entities = defaultdict(list)
+            for ent in doc.ents:
+                entities[ent.label_].append(ent.text)
+            return dict(entities)
+        
+        data['Named_Entities'] = data['Article'].apply(extract_named_entities)
+        
+        entity_counts = Counter(entity for entities in data['Named_Entities'] for entity in entities)
+        entity_df = pd.DataFrame.from_dict(entity_counts, orient='index').reset_index()
+        entity_df.columns = ['Entity', 'Count']
+        
+        fig = px.bar(entity_df.head(10), x='Entity', y='Count', title='Top 10 Named Entities')
+        fig.show()
+            </pre>
+        
+            <h4>6. Topic Modeling</h4>
+            <p>
+                Topic Modeling is a technique to discover topics present in a collection of text. In this step, we use
+                scikit-learn to perform Latent Dirichlet Allocation (LDA), a popular topic modeling method. We visualize the
+                distribution of topics with a bar chart.
+            </p>
+            <pre>
+        vectorizer = CountVectorizer(max_df=0.95, min_df=2, max_features=1000, stop_words='english')
+        tf = vectorizer.fit_transform(data['Article'])
+        lda_model = LatentDirichletAllocation(n_components=5, random_state=42)
+        lda_topic_matrix = lda_model.fit_transform(tf)
+        
+        topic_names = ["Topic " + str(i) for i in range(lda_model.n_components)]
+        data['Dominant_Topic'] = [topic_names[i] for i in lda_topic_matrix.argmax(axis=1)]
+        topic_counts = data['Dominant_Topic'].value_counts().reset_index()
+        topic_counts.columns = ['index', 'count']
+        
+        fig = px.bar(topic_counts, x='index', y='count', title='Topic Distribution')
+        fig.show()
+            </pre>
+        
+            <h3>Conclusion</h3>
+            <p>
+                This comprehensive guide has walked you through the essential steps of natural language processing using Python.
+                From creating captivating word clouds and analyzing sentiment distributions to extracting named entities and
+                uncovering hidden topics, you now possess the tools to extract valuable insights from textual data. Experiment,
+                explore, and unlock the full potential of NLP in your data science projects. Happy coding!
+            </p>
           </div>
         </article>
       </div>
