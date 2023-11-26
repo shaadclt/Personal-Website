@@ -531,6 +531,7 @@ If you are looking for a dedicated and self-driven data scientist with expertise
     <br>
     <div class="blog-posts">
       <!-- Blog Post Content Goes Here -->
+      <!-- Blog Post 1-->
       <div class="blog-post" id="blog-post-1">
         <article class="entry">
           <header class="entry-header">
@@ -664,25 +665,167 @@ If you are looking for a dedicated and self-driven data scientist with expertise
           </div>
         </article>
       </div>
+
+      <!-- End of Blog Post 1-->
   
-      <div class="blog-post" id="blog-post-2" style="display: none;">
+      <!-- Blog Post 2-->
+      <div class="blog-post" id="blog-post-2">
         <article class="entry">
           <header class="entry-header">
-            <h2 class="entry-title">
-              <a href="#">Machine Learning in Practice</a>
+            <h2 class="entry-title text-center">
+              <a href="#">Building a Next Word Prediction Model using LSTM and TensorFlow</a>
             </h2>
             <div class="entry-meta">
               <!-- <ul>
-                <li class="d-flex align-items-center"><i class="bi bi-clock"></i> &nbsp;<time datetime="2023-11-25">November 25, 2023</time></li>
-              </ul>
-            </div> -->
-          </header>
+                <li class="d-flex align-items-center"><i class="bi bi-clock"></i> &nbsp;<time datetime="2023-11-24">November 24, 2023</time></li>
+              </ul> -->
+            </div>
+          </header><br><br>
           <div class="entry-content">
-            <p>Implementing machine learning models can be challenging...</p>
+            <h3>Introduction</h3>
+            <p>
+              Predicting the next word in a sequence is a fascinating application of natural language processing (NLP). In this blog post, we'll walk through the process of building a Next Word Prediction (NWP) model using the Long Short-Term Memory (LSTM) architecture with TensorFlow. We'll cover tokenization, creating input-output pairs, building a neural network, training the model, and generating predictions.
+            </p>
+        
+            <h4>1. Importing Libraries</h4>
+            <p>
+              We start by importing the necessary libraries for our project, including NumPy for numerical operations and TensorFlow for building and training neural networks. We specifically import components from TensorFlow's Keras module, which provides high-level building blocks for creating neural networks.
+            </p>
+            <pre>
+              import numpy as np
+              import tensorflow as tf
+              from tensorflow.keras.preprocessing.text import Tokenizer
+              from tensorflow.keras.preprocessing.sequence import pad_sequences
+              from tensorflow.keras.models import Sequential
+              from tensorflow.keras.layers import Embedding, LSTM, Dense
+            </pre>
+        
+            <h4>2. Loading Data</h4>
+            <p>
+              The dataset used for this project is the text from Sherlock Holmes stories, loaded from a plain text file. This text will be the basis for training our NLP model.
+            </p>
+            <pre>
+              with open('sherlock-holm.es_stories_plain-text_advs.txt', 'r', encoding='utf-8') as file:
+              text = file.read()
+            </pre>
+        
+            <h4>3. Tokenizing the Text</h4>
+            <p>
+              Tokenization is the process of breaking down text into words or subwords. We use the Tokenizer class from Keras to tokenize the text and create a sequence of words. The total number of unique words in the text is calculated as total_words.
+            </p>
+            <pre>
+              tokenizer = Tokenizer()
+              tokenizer.fit_on_texts([text])
+              total_words = len(tokenizer.word_index) + 1
+            </pre>
+        
+            <h4>4. Creating Input-Output Pairs</h4>
+            <p>
+              We create input-output pairs by sliding a window over the tokenized sequences. For each window, the input is the sequence of words up to a certain point, and the output is the next word in the sequence.
+            </p>
+            <pre>
+              input_sequences = []
+              for line in text.split('\n'):
+                  token_list = tokenizer.texts_to_sequences([line])[0]
+                  for i in range(1,len(token_list)):
+                      n_gram_sequence = token_list[:i+1]
+                      input_sequences.append(n_gram_sequence)
+            </pre>
+        
+            <h4>5. Padding Input Sequences</h4>
+            <p>
+              To train our model efficiently, we pad the input sequences to have equal length. The maximum sequence length is determined by the longest sequence in our input data.
+            </p>
+            <pre>
+              max_sequence_len = max([len(seq) for seq in input_sequences])
+              input_sequences = np.array(pad_sequences(input_sequences,maxlen=max_sequence_len, padding='pre'))
+            </pre>
+        
+            <h4>6. Splitting Sequences into Input and Output</h4>
+            <p>
+              We separate the input sequences into features (X) and labels (y), where X contains all words except the last one, and y contains the last word in each sequence.
+            </p>
+            <pre>
+              X = input_sequences[:,:-1]
+              y = input_sequences[:,-1]
+            </pre>
+
+            <h4>7. Converting the Output to One-Hot Encoded Vectors</h4>
+            <p>
+              The output labels (y) are converted to one-hot encoded vectors. This step is necessary for training a categorical classification model.
+            </p>
+            <pre>
+              y = np.array(tf.keras.utils.to_categorical(y,num_classes=total_words))
+            </pre>
+
+            <h4>8. Building Neural Network Architecture</h4>
+            <p>
+              We create a sequential model using Keras. The model consists of an embedding layer, an LSTM layer, and a dense layer with a softmax activation function. The embedding layer turns positive integers into dense vectors, and the LSTM layer helps the model understand the context of the input sequences.
+            </p>
+            <pre>
+              model = Sequential()
+              model.add(Embedding(total_words,100,input_length = max_sequence_len-1))
+              model.add(LSTM(150))
+              model.add(Dense(total_words,activation='softmax'))
+              print(model.summary())
+            </pre>
+
+            <h4>9. Compile and Train the Model</h4>
+            <p>
+              The model is compiled using categorical crossentropy as the loss function and the Adam optimizer. We train the model on our input sequences and labels for 100 epochs.
+            </p>
+            <pre>
+              model.compile(loss='categorical_crossentropy',optimizer='adam',metrics=['accuracy'])
+              model.fit(X,y,epochs=100,verbose=1)
+            </pre>
+
+            <h4>10. Saving the Model</h4>
+            <p>
+              Once the training is complete, we save the model to a file (nwp_model.h5) for later use or deployment.
+            </p>
+            <pre>
+              model.save('nwp_model.h5')
+            </pre>
+
+            <h4>11. Generating Next Word Predictions</h4>
+            <p>
+              We load the saved model and demonstrate how to generate next word predictions given a seed text. The model predicts the next word iteratively based on the input seed text.
+            </p>
+            <pre>
+              from tensorflow.keras.models import load_model
+              # Load the saved model
+              model = load_model('nwp_model.h5')  # Replace 'my_model.h5' with the path to your saved model
+
+              seed_text = "I am excited to"
+              next_words = 2
+
+              for _ in range(next_words):
+                  token_list = tokenizer.texts_to_sequences([seed_text])[0]
+                  token_list = pad_sequences([token_list], maxlen=max_sequence_len - 1, padding='pre')
+                  predicted = np.argmax(model.predict(token_list), axis=-1)
+                  output_word = ""
+                  for word, index in tokenizer.word_index.items():
+                      if index == predicted:
+                          output_word = word
+                          break
+                  seed_text += " " + output_word
+
+              print(seed_text)
+            </pre>
+        
+            <h3>Conclusion</h3>
+            <p>
+              Building a Next Word Prediction model involves several key steps, from data preparation to model training and prediction generation. The LSTM architecture, known for its ability to capture sequential patterns, proves to be effective in understanding and predicting the next word in a sequence of text. This project provides a foundational understanding of text generation using neural networks.
+
+              Feel free to modify and expand on this draft to fit the style and requirements of your blog!
+            </p>
           </div>
         </article>
       </div>
-    </div>
+
+
+      <!-- End of Blog Post 2-->
+  </div>
   </section>
   
 <!-- End Blog Section -->
