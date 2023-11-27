@@ -825,6 +825,225 @@ If you are looking for a dedicated and self-driven data scientist with expertise
 
 
       <!-- End of Blog Post 2-->
+      
+      <!-- Blog Post 3-->
+      <div class="blog-post" id="blog-post-1">
+        <article class="entry">
+          <header class="entry-header">
+            <h2 class="entry-title text-center">
+              <a href="#">Navigating Currency Markets: A Comprehensive Guide to Exchange Rate Forecasting</a>
+            </h2>
+            <div class="entry-meta">
+              <!-- <ul>
+                <li class="d-flex align-items-center"><i class="bi bi-clock"></i> &nbsp;<time datetime="2023-11-24">November 24, 2023</time></li>
+              </ul> -->
+            </div>
+          </header><br><br>
+          <div class="entry-content">
+            <h3>Introduction</h3>
+            <p>
+              Currency exchange rates play a pivotal role in the global economy, influencing trade, investment, and financial decisions. In this blog post, we embark on a journey of currency exchange rate forecasting using Python. We will leverage data analysis, visualization, and time series forecasting techniques to gain insights into the USD – INR exchange rates.
+            </p>
+        
+            <h4>Importing Libraries and Loading Data:</h4>
+            <p>
+              To kickstart our analysis, we begin by importing essential Python libraries such as pandas, numpy, matplotlib, seaborn, and plotly. We load the dataset containing the USD – INR exchange rates and perform an initial check for missing values.
+            </p>
+            <pre>
+              import pandas as pd
+              import numpy as np
+              import matplotlib.pyplot as plt
+              import seaborn as sns
+              import plotly.express as px
+              import warnings
+              warnings.filterwarnings('ignore')
+
+              data = pd.read_csv('INR-USD.csv')
+              data.head()
+            </pre>
+        
+            <h4>Descriptive Statistics and Visualization:</h4>
+            <p>
+              After ensuring data integrity, we delve into a descriptive analysis of the dataset. Utilizing Plotly Express, we create a line chart to visualize the trend of USD – INR conversion rates over the years.
+            </p>
+            <pre>
+              data.isnull().sum()
+
+              data = data.dropna()
+
+              data.describe()
+            </pre>
+        
+            <h4>Yearly and Monthly Growth Analysis:</h4>
+            <p>
+              Adding a temporal dimension to our analysis, we explore the aggregated yearly and monthly growth of the conversion rates. Bar charts vividly illustrate the fluctuations, highlighting interesting patterns such as the USD's consistent strength in the second quarter.
+            </p>
+            <pre>
+              figure = px.line(data, x="Date", 
+                 y="Close", 
+                 title='USD - INR Conversion Rate over the years')
+              figure.show()
+
+              data["Date"] = pd.to_datetime(data["Date"], format = '%Y-%m-%d')
+              data['Year'] = data['Date'].dt.year
+              data["Month"] = data["Date"].dt.month
+              data.head()
+
+              import plotly.graph_objs as go
+              import plotly.io as pio
+
+              # Calculate yearly growth
+              growth = data.groupby('Year').agg({'Close': lambda x: (x.iloc[-1]-x.iloc[0])/x.iloc[0]*100})
+
+              fig = go.Figure()
+              fig.add_trace(go.Bar(x=growth.index,
+                                  y=growth['Close'],
+                                  name='Yearly Growth'))
+
+              fig.update_layout(title="Yearly Growth of USD - INR Conversion Rate",
+                                xaxis_title="Year",
+                                yaxis_title="Growth (%)",
+                                width=900,
+                                height=600)
+
+              pio.show(fig)
+
+
+              # Calculate monthly growth
+              data['Growth'] = data.groupby(['Year', 'Month'])['Close'].transform(lambda x: (x.iloc[-1] - x.iloc[0]) / x.iloc[0] * 100)
+
+              # Group data by Month and calculate average growth
+              grouped_data = data.groupby('Month').mean().reset_index()
+
+              fig = go.Figure()
+
+              fig.add_trace(go.Bar(
+                  x=grouped_data['Month'],
+                  y=grouped_data['Growth'],
+                  marker_color=grouped_data['Growth'],
+                  hovertemplate='Month: %{x}<br>Average Growth: %{y:.2f}%<extra></extra>'
+              ))
+
+              fig.update_layout(
+                  title="Aggregated Monthly Growth of USD - INR Conversion Rate",
+                  xaxis_title="Month",
+                  yaxis_title="Average Growth (%)",
+                  width=900,
+                  height=600
+              )
+
+              pio.show(fig)
+            </pre>
+        
+            <h4>4. Analyzing the Distribution of Sentiments</h4>
+            <p>
+                Sentiment analysis helps us understand the emotional tone of the articles. Using TextBlob, we calculate the
+                sentiment polarity for each article and visualize the distribution using a histogram with Plotly Express.
+            </p>
+            <pre>
+        data['Sentiment'] = data['Article'].apply(lambda x: TextBlob(x).sentiment.polarity)
+        fig = px.histogram(data, x='Sentiment', title='Sentiment Distribution')
+        fig.show()
+            </pre>
+        
+            <h4>5. Performing Named Entity Recognition</h4>
+            <p>
+                Named Entity Recognition (NER) involves identifying entities such as people, organizations, and locations within
+                the text. Using spaCy, we extract named entities from the articles and visualize the top entities with a bar
+                chart.
+            </p>
+            <pre>
+        def extract_named_entities(text):
+            doc = nlp(text)
+            entities = defaultdict(list)
+            for ent in doc.ents:
+                entities[ent.label_].append(ent.text)
+            return dict(entities)
+        
+        data['Named_Entities'] = data['Article'].apply(extract_named_entities)
+        
+        entity_counts = Counter(entity for entities in data['Named_Entities'] for entity in entities)
+        entity_df = pd.DataFrame.from_dict(entity_counts, orient='index').reset_index()
+        entity_df.columns = ['Entity', 'Count']
+        
+        fig = px.bar(entity_df.head(10), x='Entity', y='Count', title='Top 10 Named Entities')
+        fig.show()
+            </pre>
+        
+            <h4>Forecasting Exchange Rates with SARIMA:</h4>
+            <p>
+              Transitioning into the realm of time series forecasting, we recognize a seasonal pattern in the data using seasonal decomposition. Subsequently, we employ the pmdarima library to determine the optimal parameters (p, d, q) for our SARIMA model.
+            </p>
+            <pre>
+              from statsmodels.tsa.seasonal import seasonal_decompose
+              result = seasonal_decompose(data["Close"], model='multiplicative', period=24)
+              fig = plt.figure()  
+              fig = result.plot()  
+              fig.set_size_inches(8, 6)
+              fig.show()
+
+              from pmdarima.arima import auto_arima
+              model = auto_arima(data['Close'], seasonal=True, m=52, suppress_warnings=True)
+              print(model.order)
+
+              p, d, q = 2, 1, 0
+
+              from statsmodels.tsa.statespace.sarimax import SARIMAX
+              model = SARIMAX(data["Close"], order=(p, d, q), 
+                              seasonal_order=(p, d, q, 52))  
+              fitted = model.fit() 
+              print(fitted.summary())
+
+              predictions = fitted.predict(len(data), len(data)+60)
+              print(predictions)
+            </pre>
+
+            <h4>Visualizing Forecasted Results:</h4>
+            <p>
+              In the final stretch, we visualize the forecasted exchange rates alongside the training data. This Plotly figure showcases the model's predictions, providing a tangible representation of the forecasted currency values.
+            </p>
+            <pre>
+              # Create figure
+              fig = go.Figure()
+
+              # Add training data line plot
+              fig.add_trace(go.Scatter(
+                  x=data.index,
+                  y=data['Close'],
+                  mode='lines',
+                  name='Training Data',
+                  line=dict(color='blue')
+              ))
+
+              # Add predictions line plot
+              fig.add_trace(go.Scatter(
+                  x=predictions.index,
+                  y=predictions,
+                  mode='lines',
+                  name='Predictions',
+                  line=dict(color='green')
+              ))
+
+              fig.update_layout(
+                  title="INR Rate - Training Data and Predictions",
+                  xaxis_title="Date",
+                  yaxis_title="Close",
+                  legend_title="Data",
+                  width=900,
+                  height=600
+              )
+
+              pio.show(fig)
+            </pre>
+        
+            <h3>Conclusion</h3>
+            <p>
+              Currency exchange rate forecasting involves a blend of statistical analysis, machine learning, and a deep understanding of economic factors. Through this blog post, we've navigated the process step by step, from data exploration to building a SARIMA model for accurate predictions. Armed with these insights, you can make informed decisions in the dynamic world of currency markets. Stay tuned for more data-driven explorations and forecasting adventures!.
+            </p>
+          </div>
+        </article>
+      </div>
+      <!--End of Blog Post 3-->
   </div>
   </section>
   
