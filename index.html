@@ -941,9 +941,9 @@ If you are looking for a dedicated and self-driven data scientist with expertise
                 sentiment polarity for each article and visualize the distribution using a histogram with Plotly Express.
             </p>
             <pre>
-        data['Sentiment'] = data['Article'].apply(lambda x: TextBlob(x).sentiment.polarity)
-        fig = px.histogram(data, x='Sentiment', title='Sentiment Distribution')
-        fig.show()
+              data['Sentiment'] = data['Article'].apply(lambda x: TextBlob(x).sentiment.polarity)
+              fig = px.histogram(data, x='Sentiment', title='Sentiment Distribution')
+              fig.show()
             </pre>
         
             <h4>5. Performing Named Entity Recognition</h4>
@@ -953,21 +953,21 @@ If you are looking for a dedicated and self-driven data scientist with expertise
                 chart.
             </p>
             <pre>
-        def extract_named_entities(text):
-            doc = nlp(text)
-            entities = defaultdict(list)
-            for ent in doc.ents:
-                entities[ent.label_].append(ent.text)
-            return dict(entities)
+              def extract_named_entities(text):
+                  doc = nlp(text)
+                  entities = defaultdict(list)
+                  for ent in doc.ents:
+                      entities[ent.label_].append(ent.text)
+                  return dict(entities)
         
-        data['Named_Entities'] = data['Article'].apply(extract_named_entities)
-        
-        entity_counts = Counter(entity for entities in data['Named_Entities'] for entity in entities)
-        entity_df = pd.DataFrame.from_dict(entity_counts, orient='index').reset_index()
-        entity_df.columns = ['Entity', 'Count']
-        
-        fig = px.bar(entity_df.head(10), x='Entity', y='Count', title='Top 10 Named Entities')
-        fig.show()
+              data['Named_Entities'] = data['Article'].apply(extract_named_entities)
+              
+              entity_counts = Counter(entity for entities in data['Named_Entities'] for entity in entities)
+              entity_df = pd.DataFrame.from_dict(entity_counts, orient='index').reset_index()
+              entity_df.columns = ['Entity', 'Count']
+              
+              fig = px.bar(entity_df.head(10), x='Entity', y='Count', title='Top 10 Named Entities')
+              fig.show()
             </pre>
         
             <h4>Forecasting Exchange Rates with SARIMA:</h4>
